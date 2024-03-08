@@ -10,11 +10,11 @@
 ```
 Creating new virtual environment
 ```
-python -m venv fastapi_venv
+python -m venv venv
 ```
 Activating our virtual environment so that all libraries are installed here
 ```
-fastapi_venv\scripts\activate
+venv\scripts\activate
 ```
 
 Installing fastapi and uvicorn libraries into our venv

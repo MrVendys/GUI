@@ -9,6 +9,27 @@ The application on your phone then interprets the data and presents it to you in
 
 ## What is FastAPI
  - A high-performing web framework for building APIs with Python
+### How it works
+ - FastAPI a obecně API pracujou s "path operations". Když se bavíme o "Path" tak se tím myslí část URL za první **/**
+```
+https://example.com/items/foo
+```
+"Path" je :
+```
+/items/foo
+```
+FastAPI používá "operace", což zde odkazuje na HTTP metody:
+
+- POST : Vytvoří data
+- GET : Vrátí data
+- PUT : Upraví data
+- DELETE : Smaže data
+
+další zajimavé:
+- OPTIONS
+- HEAD
+- PATCH
+- TRACE
 
 ## Benefits of FastAPI
  - Fast
