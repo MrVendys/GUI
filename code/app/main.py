@@ -39,7 +39,7 @@ app = FastAPI()
 
 templates = Jinja2Templates(directory="app/templates")
 # Endpoint to create a new item
-@app.post("/items/", response_model=ItemOut)
+@app.post("/items/put/", response_model=ItemOut)
 def create_item(item: ItemCreate):
     db = SessionLocal()
     db_item = Item(name=item.name, description=item.description)
@@ -57,14 +57,14 @@ def read_item(item_id: int):
         raise HTTPException(status_code=404, detail="Item not found")
     return db_item
 
-@app.get("/items/", response_model=list[ItemOut])
+@app.get("/items/get/", response_model=list[ItemOut])
 def read_items(request: Request):
     db = SessionLocal()
     items = db.query(Item).all()
     return templates.TemplateResponse("index.html", {"request": request, "items":items})
 
 # Endpoint to update an item by ID
-@app.put("/items/{item_id}", response_model=ItemOut)
+@app.put("/items/put/", response_model=ItemOut)
 def update_item(item_id: int, item: ItemCreate):
     db = SessionLocal()
     db_item = db.query(Item).filter(Item.id == item_id).first()
