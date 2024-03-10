@@ -2,30 +2,31 @@
 ## Návod na instalaci
 
 
-# FastApi
+# FastApi :runner:
 ## Návod na instalaci
-```
-```
-Vytvoření virtuálního prostředí
+
+:one: Vytvoření virtuálního prostředí
 ```
 python -m venv venv
 ```
-Aktivace virtuálního prostředí, aby se nám všechny knihovny instalovali sem
+
+:two: Aktivace virtuálního prostředí, aby se nám všechny knihovny instalovali sem
 ```
 venv\scripts\activate
 ```
 
-Nainstalování knihoven fastapi a uvicorn
+:three: Nainstalování knihoven fastapi a uvicorn
 ```
 pip install fastapi uvicorn[standard]
 ```
 
-Teď si vytvoříme python soubor a naimportujeme FastAPI
+:four: Vytvoření python souboru a naimportování FastAPI
 ```
 from fastapi import FastAPI
 
 app = FastAPI()
 ```
+
 ### Spouštění aplikace
 ```
 uvicorn {jmeno python souboru}:{jmeno FastAPI instance} --reload
@@ -35,9 +36,10 @@ V mém případě:
 uvicorn main:app --reload
 ```
 
-## Programování
+## Programování :computer:
 Jakmile máme připravené pracovní prostředí, je čas programovat
 
+Podíváme se na 4 základní endpointy
 ### Endpoint GET
 
 ```
@@ -61,21 +63,21 @@ async def get_names():
 ```
 FastAPI používá tzv "Path and Querry parametrs"
 
-Path parametrs: pracujeme s daty, které jsou součástí URL adresy
-Buď s nimi můžeme dál pracovat
+1. Path parametrs: pracujeme s daty, které jsou součástí URL adresy. 
+    Buď s nimi můžeme dál pracovat:
 ```
-@app.get("/gt_name/{name_id}")
+@app.get("/gt_name/**{name_id}**")
 async def get_name(name_id: int):
     return {"Number": name_id}
 ```
-Nebo je můžeme staticky deklarovat (podmínka)
+    Nebo je můžeme staticky deklarovat (podmínka)
 ```
-@app.get("/gt_name/5")
+@app.get("/gt_name/**5**)
 async def get_name(name_id: int):
     return {"Number": name_id}
 ```
 
-Querry parametrs: Pracujeme s daty, které nám přijdou z tzv "body"
+2. Querry parametrs: Pracujeme s daty, které nám přijdou z tzv "body"
 ```
 async def get_names(skip : int = 0, limit: int = 10):
 ```
@@ -90,23 +92,25 @@ async def update_name(name_id: int, name: str, user: User):
 @app.post("/cr_name/")
 async def create_name(name: string):
     fake_names_db.append(name)
+    return {"message": "Item added successfully"}
 ```
 ### Endpoint PUT
 ```
 @app.put("/pt_name/{name_id}")
-async def update_item(name_id: int):
-    del fake_names_db[name_id]
+async def update_item(name_id: int, name: str):
+    fake_names_db[name_id] = name
     return {"message": "Item updated successfully"}
 ```
 ### Endpoint DELETE
 ```
-@app.post("/dl_name/")
-async def delete_item():
-    return {"message": "POST new item"}
+@app.put("/pt_name/{name_id}")
+async def update_item(name_id: int):
+    del fake_names_db[name_id]
+    return {"message": "Item deleted successfully"}
 ```
 
 ## pydantic
- Pydantic je knihovna na validaci dat
+ Pydantic je knihovna na validaci dat  
  FastAPI je plně kompatibilní (a založena na) knihovně Pydantic
  
  Proč ho používat?
