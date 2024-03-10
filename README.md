@@ -1,23 +1,74 @@
 # AsynchIO
 ## Návod na instalaci
-## Install guide
 
 
 # FastApi
 ## Návod na instalaci
-## Install guide
 ```
 ```
-Creating new virtual environment
+Vytvoření virtuálního prostředí
 ```
 python -m venv venv
 ```
-Activating our virtual environment so that all libraries are installed here
+Aktivace virtuálního prostředí, aby se nám všechny knihovny instalovali sem
 ```
 venv\scripts\activate
 ```
 
-Installing fastapi and uvicorn libraries into our venv
+Nainstalování knihoven fastapi a uvicorn
 ```
 pip install fastapi uvicorn[standard]
 ```
+
+Teď si vytvoříme python soubor a naimportujeme FastAPI
+```
+from fastapi import FastAPI
+
+app = FastAPI()
+```
+### Spouštění aplikace
+```
+uvicorn {jmeno python souboru}:{jmeno FastAPI instance} --reload
+```
+V mém případě: 
+```
+uvicorn main:app --reload
+```
+
+## Programování
+Jakmile máme připravené pracovní prostředí, je čas programovat
+
+### Endpoint GET
+
+
+```
+
+
+```
+```
+fake_names_db = [
+    "Elon Muskrat",
+    "Johnny Dippity-Doo",
+    "Taylor Swiftly Running Away",
+    "Brad Pitstop",
+    "Angelina Joliet",
+    "Kim Carcrashian",
+    "Leonardo DiCapuccino",
+    "Oprah Windfury",
+    "Beyoncé Knows-all",
+    "Dwayne 'The Rocking Chair' Johnson"
+]
+
+@app.get("/names/")
+async def get_names():
+    return fake_names_db
+
+```
+
+### Endpoint POST
+
+### Endpoint PUT
+
+### Endpoint DELETE
+
+
