@@ -66,13 +66,13 @@ FastAPI používá tzv "Path and Querry parametrs"
 1. Path parametrs: pracujeme s daty, které jsou součástí URL adresy. 
     Buď s nimi můžeme dál pracovat:
 ```
-@app.get("/gt_name/**{name_id}**")
+@app.get("/gt_name/{name_id}")
 async def get_name(name_id: int):
     return {"Number": name_id}
 ```
     Nebo je můžeme staticky deklarovat (podmínka)
 ```
-@app.get("/gt_name/**5**)
+@app.get("/gt_name/5)
 async def get_name(name_id: int):
     return {"Number": name_id}
 ```
@@ -113,16 +113,16 @@ async def update_item(name_id: int):
  Pydantic je knihovna na validaci dat  
  FastAPI je plně kompatibilní (a založena na) knihovně Pydantic
  
- Proč ho používat?
+### Proč ho používat?
 
- Nápověda typů
- Rychlá validace dat
- Kompatibilní s JSON
- Chybové hlášky
+ Nápověda typů  
+ Rychlá validace dat  
+ Kompatibilní s JSON  
+ Chybové hlášky  
 
  Pydantic používá tzv BaseModely
 ```
-from pydantic import BaseModel
+from pydantic import BaseModel, PositiveInt
 
 class Name(BaseModel):
     name: str  
@@ -177,4 +177,29 @@ async def update_item(name_id: int, name: Name):
 async def delete_item(name_id: int):
     fake_names_db.remove(fake_names_db[name_id])
     return {"message": "Name deleted successfully."}
+```
+
+## Připojení na databázi
+
+### Instalace
+```
+pip install sqlalchemy
+```
+
+Naimportování potřebných knihoven
+
+```
+from sqlalchemy import Column, Integer, String, DateTime, Enum, MetaData, func, create_engine, inspect
+from sqlalchemy.orm import relationship, declarative_base
+
+Base = declarative_base()
+```
+
+Vytvoření tabulky
+
+```
+class NameTable(Base):
+	__tablename__ = 'nameTable'
+	id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(25))
 ```

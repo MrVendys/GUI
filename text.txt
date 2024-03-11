@@ -5,3 +5,5 @@ základní metody GET, POST, PUT, DELETE, jak to funguje
 - ukázat si další metody, vychytávky (injection, websockety)
 2 fáze rychle připojit na db
 pokud zbyde čas, ale mít to připravené - 3 fáze ukázat pokročilejší appku s nějakou html strukturou, js, css....
+
+dodělat http exceptiony a vysvětlit je 
