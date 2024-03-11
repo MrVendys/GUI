@@ -31,6 +31,19 @@ Další zajimavé informace:
 - PATCH
 - TRACE
 
+## Pydantic
+ FastAPI je založena na knihovně Pydantic, která slouží pro validaci dat. 
+ Jestli jsou ve správném formátu, správném typu aj.
+ Blíže se s ní seznámíme dále
+
+ 
+### Proč ho používat?
+
+ Nápověda pro typy 
+ Rychlá validace dat  
+ Kompatibilní s JSON  
+ Chybové hlášky  
+
 ### Podobnost s Flask
 Ukázak kodu 
 FastAPI

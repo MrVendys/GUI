@@ -50,7 +50,7 @@ async def get_name():
 
 FastAPI používá tzv "Path and Querry parametrs"
 
-**2. Querry parametrs:** pracujeme s daty, které jsou součástí URL adresy.  
+**1. Path parametrs:** pracujeme s daty, které jsou součástí URL adresy.  
 ```
 @app.get("/gt_name/{name}")
 async def get_name(name):
@@ -87,6 +87,7 @@ Jinak bychom dostali tuto krásnou chybovou hlášku od knihovny pydantic, o kte
 "msg":"Input should be a valid integer,  
 unable to parse string as an integer","input":"pepa","url":"https://errors.pydantic.dev/2.6/v/int_parsing"}]}
 ```
+   
 
 <details>
 <summary> ÚKOL </summary>
@@ -100,6 +101,7 @@ async def get_name():
 
 Jaký return to vrátí?
 </details>
+   
 
 
 **2. Querry parametrs:** Pracujeme s daty, které nám přijdou z tzv "body"
@@ -111,11 +113,12 @@ Samozřejmě můžeme kombinovat Path a Querry parametrs nebo jich napsat někol
 ```
 @app.put("/names/{name_id}")
 async def update_name(name_id: int, name: str, user: User):
-```
+```  
+
 ### Endpoint POST
 Skrz body nám přijde string 'name' a ten přidáme do db
 
-Nad náš get endpoint si přidáme falešnou db, kterou budme testovat naše endpointy:
+Nad náš get endpoint si přidáme falešnou db, kterou budeme testovat naše endpointy:
 ```
 fake_names_db = [
     "Elon Muskrat",
@@ -130,14 +133,15 @@ fake_names_db = [
     "Dwayne 'The pebble' Johnson"
 ]
 ```
-
-Nyní k post
+  
+Syntax na endpoint post
 ```
-@app.post("/cr_name/")
+@app.post("/ps_name/")
 async def create_name(name: string):
     fake_names_db.append(name)
     return {"message": "Item added successfully"}
-```
+```  
+
 ### Endpoint PUT
 Skrz body nám přijde int 'name_id' a string 'name'. Podle intu přepíšeme požadovaný text v db
 ```
@@ -145,57 +149,48 @@ Skrz body nám přijde int 'name_id' a string 'name'. Podle intu přepíšeme po
 async def update_item(name_id: int, name: str):
     fake_names_db[name_id] = name
     return {"message": "Item updated successfully"}
-```
+```  
+
 ### Endpoint DELETE
 Skrz body nám přijde int 'name_id'. Podle intu odstraníme požadovaný text v db
 ```
-@app.put("/pt_name/{name_id}")
+@app.delete("/del_name/{name_id}")
 async def update_item(name_id: int):
     del fake_names_db[name_id]
     return {"message": "Item deleted successfully"}
 ```
-
+  
 ## Pydantic
- Pydantic je knihovna na validaci dat  
- FastAPI je plně kompatibilní (a založena na) knihovně Pydantic
- 
-### Proč ho používat?
 
- Nápověda pro typy 
- Rychlá validace dat  
- Kompatibilní s JSON  
- Chybové hlášky  
-
- Pydantic používá tzv. BaseModely
- BaseModel -> třída, podle které fastapi (pydantic) ověřuje, že data přišla celá a ve správných typech. (Nenapsali jsme "text" do typu int)
-           -> nahrazuje query parametrs za třídu
+Pydantic používá tzv. BaseModely
+BaseModel -> třída, podle které fastapi (pydantic) ověřuje, že data přišla celá a ve správných typech. (Nenapsali jsme "text" do typu int)  
+          -> můžeme tím nahradit spoustu validací v querry parametrs jedním BaseModel
 ```
 from pydantic import BaseModel, PositiveInt
 
 class Name(BaseModel):
     name: str  
     people_with_name: PositiveInt | None = None
-```
+```  
 
 Přepíšeme náš kód, aby využíval BaseModely
 
 ```
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, PositiveInt
+from pydantic import BaseModel, PositiveInt, EmailStr
 
 app = FastAPI()
 
 fake_names_db = [
-    {"name": "Elon Tusk", "people_with_name": 3},
-    {"name": "Johnny Depp-ression", "people_with_name": 2},
-    {"name": "Taylor Drift", "people_with_name": 1},
-    {"name": "Brad Pitstop", "people_with_name": 2},
-    {"name": "Angelina Joliet", "people_with_name": 1},
-    {"name": "Kim Carcrashian", "people_with_name": 2},
-    {"name": "Leonardo DiCapuccino", "people_with_name": 3},
-    {"name": "Oprah Windfury", "people_with_name": 0},
-    {"name": "Ariana Grande Latte", "people_with_name": 2},
-    {"name": "Dwayne John Jonah Johnson", "people_with_name": 3}
+    {"name": "Elon Tusk", "people_with_name": 3, "email": "elon.tusk@email.com"},
+    {"name": "Johnny Depp-ression", "people_with_name": 2, "email": "johnny.deppression@email.com"},
+    {"name": "Taylor Drift", "people_with_name": 1, "email": "taylor.drift@email.com"},
+    {"name": "Brad Pitstop", "people_with_name": 2, "email": "brad.pitstop@email.com"},
+    {"name": "Angelina Joliet", "people_with_name": 1, "email": "angelina.joliet@email.com"},
+    {"name": "Kim Carcrashian", "people_with_name": 2, "email": "kim.carcrashian@email.com"},
+    {"name": "Leonardo DiCapuccino", "people_with_name": 3, "email": "leonardo.dicapuccino@email.com"},
+    {"name": "Ariana Grande Latte", "people_with_name": 2, "email": "ariana.grande.latte@email.com"},
+    {"name": "Dwayne John Jonah Johnson", "people_with_name": 3, "email": "dwayne.john.jonah.johnson@email.com"}
 ]
 
 class Name(BaseModel):
@@ -224,7 +219,15 @@ async def update_item(name_id: int, name: Name):
 async def delete_item(name_id: int):
     fake_names_db.remove(fake_names_db[name_id])
     return {"message": "Name deleted successfully."}
-```
+```  
+Z pydantic jsem si naimportoval PositiveInt a EmailStr.  
+PositiveInt: čísla budou kladná  
+EmailStr: řetězec bude mít podobu emailu  
+
+Zde jsou další příklady:
+SecretBytes: pro hesla (***)
+List: pouze formát listu
+URL: formát URL
 
 ## Připojení na databázi
 
