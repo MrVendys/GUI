@@ -34,7 +34,8 @@ uvicorn {jmeno python souboru}:{jmeno FastAPI instance} --reload
 V mém případě: 
 ```
 uvicorn main:app --reload
-```
+```  
+Naše aplikace beží na localhostu na adrese, kterou nám to vypsalo do konzole.
 
 ## Programování :computer:
 Jakmile máme připravené pracovní prostředí, je čas programovat
@@ -46,7 +47,25 @@ Základní syntax endpointů
 @app.get("/gt_name")
 async def get_name():
     return {"Hello": "This is your get endpoint"}
-```
+```  
+Teď, když se podíváme zpátky na náš localhost, tak by nám to mělo vypsat "Hello": "This is your get endpoint".  
+
+Alternativně můžeme do URL za náší localhost adresu připsat /docs a objeví se nám swagger  
+
+
+## Co je to SWAGGER
+<details>
+<summary> Swagger </summary>
+    Dopřává nám možnost vizualizovat a interagovat s naší API bez toho, abychom si museli nejdřív naprogramovat nějakou logiku.  
+    Automaticky to generuje prostředí podle našich OpenAPI specifikací
+    Víc informací [zde](https://github.com/swagger-api/swagger-ui/blob/master/README.md)
+</details>  
+![alt text](code/app/img/swagger_get.png)  
+
+Po kliknutí vpravo na "Try it out" a poté dole na "Execute" se nám zavolá ten samý endpoint, jako přes URL.  
+Momentálně je jedno, přes co si to budete žkoušet.  
+  
+**Zpátky k GET**  
 
 FastAPI používá tzv "Path and Querry parametrs"
 
@@ -88,7 +107,7 @@ Jinak bychom dostali tuto krásnou chybovou hlášku od knihovny pydantic, o kte
 unable to parse string as an integer","input":"pepa","url":"https://errors.pydantic.dev/2.6/v/int_parsing"}]}
 ```
    
-
+--------------------------------------------------------------------------
 <details>
 <summary> ÚKOL </summary>
 Pod tento endpoint si zkopírujte tento:  
@@ -100,13 +119,17 @@ async def get_name():
 ```
 
 Jaký return to vrátí?
+Proč nám to nevypíše {"Number": "Vymysli si něco"}?
+>[!WARNING]
+> Záleží na pořadí endpointů ve scriptu. Ten, co je dřív si ten požadavek vezme a zpracuje.
 </details>
-   
-
+--------------------------------------------------------------------------     
 
 **2. Querry parametrs:** Pracujeme s daty, které nám přijdou z tzv "body"
 ```
-async def get_names(skip : int = 0, limit: int = 10):
+@app.get("/gt_name/")
+async def get_name(name_id: int):
+    return {"Number": name_id}
 ```
 
 Samozřejmě můžeme kombinovat Path a Querry parametrs nebo jich napsat několik
@@ -114,6 +137,10 @@ Samozřejmě můžeme kombinovat Path a Querry parametrs nebo jich napsat někol
 @app.put("/names/{name_id}")
 async def update_name(name_id: int, name: str, user: User):
 ```  
+Pro naše testování můžeme použít 2 způsoby poslání dat:  
+Data pošleme buď pomomocí napsání do URL:  
+![alt text](code/app/img/get_qpar.png)  
+Nebo přes swagger  
 
 ### Endpoint POST
 Skrz body nám přijde string 'name' a ten přidáme do db
@@ -145,7 +172,7 @@ async def create_name(name: string):
 ### Endpoint PUT
 Skrz body nám přijde int 'name_id' a string 'name'. Podle intu přepíšeme požadovaný text v db
 ```
-@app.put("/pt_name/{name_id}")
+@app.put("/pt_name/")
 async def update_item(name_id: int, name: str):
     fake_names_db[name_id] = name
     return {"message": "Item updated successfully"}
@@ -154,7 +181,7 @@ async def update_item(name_id: int, name: str):
 ### Endpoint DELETE
 Skrz body nám přijde int 'name_id'. Podle intu odstraníme požadovaný text v db
 ```
-@app.delete("/del_name/{name_id}")
+@app.delete("/del_name/")
 async def update_item(name_id: int):
     del fake_names_db[name_id]
     return {"message": "Item deleted successfully"}
@@ -163,8 +190,10 @@ async def update_item(name_id: int):
 ## Pydantic
 
 Pydantic používá tzv. BaseModely
-BaseModel -> třída, podle které fastapi (pydantic) ověřuje, že data přišla celá a ve správných typech. (Nenapsali jsme "text" do typu int)  
-          -> můžeme tím nahradit spoustu validací v querry parametrs jedním BaseModel
+BaseModel 
+    -> třída, podle které fastapi (pydantic) ověřuje, že data přišla celá a ve správných typech. (Nenapsali jsme "text" do typu int)
+    -> můžeme tím nahradit spoustu validací v querry parametrs jedním BaseModel
+  
 ```
 from pydantic import BaseModel, PositiveInt
 
@@ -205,17 +234,17 @@ async def get_names():
 async def get_item(name_id: int):
     return fake_names_db[name_id]
 
-@app.post("/cr_name/")
+@app.post("/ps_name/")
 async def create_name(name: Name):
     fake_names_db.append(name.model_dump(dict))
     return {"message": "Name created successfully"}
 
-@app.put("/pt_name/{name_id}")
+@app.put("/pt_name/")
 async def update_item(name_id: int, name: Name):
     fake_names_db[name_id] = name.model_dump(dict)
     return {"message": "Name updated successfully"}
 
-@app.delete("/dl_name/{name_id}")
+@app.delete("/dl_name/")
 async def delete_item(name_id: int):
     fake_names_db.remove(fake_names_db[name_id])
     return {"message": "Name deleted successfully."}
@@ -224,10 +253,10 @@ Z pydantic jsem si naimportoval PositiveInt a EmailStr.
 PositiveInt: čísla budou kladná  
 EmailStr: řetězec bude mít podobu emailu  
 
-Zde jsou další příklady:
-SecretBytes: pro hesla (***)
-List: pouze formát listu
-URL: formát URL
+Zde jsou další příklady:  
+SecretBytes: pro hesla (***)  
+List: pouze formát listu  
+URL: formát URL  
 
 ## Připojení na databázi
 

@@ -17,7 +17,10 @@ https://example.com/items/foo
 "Path" je :
 ```
 /items/foo
-```
+```  
+>[!HINT] 
+> Dále to budu nazývat endpointy, ale je to to samé.  
+
 FastAPI používá "operace", což zde odkazuje na HTTP metody:
 
 - POST : Vytvoří data
