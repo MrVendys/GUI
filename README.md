@@ -88,7 +88,7 @@ Jinak bychom dostali tuto krásnou chybovou hlášku od knihovny pydantic, o kte
 unable to parse string as an integer","input":"pepa","url":"https://errors.pydantic.dev/2.6/v/int_parsing"}]}
 ```
 > [!TIP]<details>
-> [!TIP]<summary> ÚKOL </summary>
+<summary> ÚKOL </summary>
 Pod tento endpoint si zkopírujte tento:  
 
 ```python
