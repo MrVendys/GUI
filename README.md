@@ -50,7 +50,7 @@ async def get_name():
 
 FastAPI používá tzv "Path and Querry parametrs"
 
-1. Path parametrs: pracujeme s daty, které jsou součástí URL adresy.  
+**2. Querry parametrs:** pracujeme s daty, které jsou součástí URL adresy.  
 ```
 @app.get("/gt_name/{name}")
 async def get_name(name):
@@ -87,7 +87,7 @@ Jinak bychom dostali tuto krásnou chybovou hlášku od knihovny pydantic, o kte
 "msg":"Input should be a valid integer,  
 unable to parse string as an integer","input":"pepa","url":"https://errors.pydantic.dev/2.6/v/int_parsing"}]}
 ```
->[!UKOL] 
+
 <details>
 <summary> ÚKOL </summary>
 Pod tento endpoint si zkopírujte tento:  
@@ -102,7 +102,7 @@ Jaký return to vrátí?
 </details>
 
 
-2. Querry parametrs: Pracujeme s daty, které nám přijdou z tzv "body"
+**2. Querry parametrs:** Pracujeme s daty, které nám přijdou z tzv "body"
 ```
 async def get_names(skip : int = 0, limit: int = 10):
 ```
