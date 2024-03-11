@@ -16,31 +16,9 @@ fake_names_db = [
     {"name": "Dwayne John Jonah Johnson", "people_with_name": 3}
 ]
 
-class Name(BaseModel):
-    name: str  
-    people_with_name: PositiveInt | None = None
-
-@app.get("/names/")
-async def get_names():
-    return fake_names_db
-
-@app.get("/name/{name_id}")
-async def get_item(name_id: int):
-    if name_id < 0 or name_id >= len(fake_names_db):
-        raise HTTPException(status_code=404, detail="Name not found")
-    return fake_names_db[name_id]
-
-@app.post("/cr_name/")
-async def create_name(name: Name):
-    fake_names_db.append(name)
-    return {"message": "Name created successfully"}
-
-@app.put("/pt_name/{name_id}")
-async def update_item(name_id: int, name: Name):
-    fake_names_db[name_id] = name
-    return {"message": "Name updated successfully"}
-
-@app.delete("/dl_name/{name_id}")
-async def delete_item(name_id: int):
-    fake_names_db.remove(fake_names_db[name_id])
-    return {"message": "Name deleted successfully."}
+@app.get("/gt_name/5")
+async def get_name():
+    return {"Number": "Vymysli si něco"}
+@app.get("/gt_name/{name_id}")
+async def get_name(name_id: int):
+    return {"Number": name_id}

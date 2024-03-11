@@ -41,7 +41,74 @@ Jakmile máme připravené pracovní prostředí, je čas programovat
 
 Podíváme se na 4 základní endpointy
 ### Endpoint GET
+Základní syntax endpointů
+```
+@app.get("/gt_name")
+async def get_name():
+    return {"Hello": "This is your get endpoint"}
+```
 
+FastAPI používá tzv "Path and Querry parametrs"
+
+1. Path parametrs: pracujeme s daty, které jsou součástí URL adresy.  
+```
+@app.get("/gt_name/{name}")
+async def get_name(name):
+    return {"Hello": name}
+```
+
+Teď, když si to vyzkoušíme, tak náš výstup by mohl vypadat takto:
+
+![alt text](code/app/img/get_pepa.png)
+
+Ale i takto
+
+![alt text](code/app/img/get_5.png)
+
+Nebo takto
+
+![alt text](code/app/img/get_ujep.png)
+
+Což je problém, protože máme db jenom na hodnoty typu string.  
+Řešením by bylo napsat podmínku do funkce, která kontroluje typy. Ale FastAPI to umí dělat sama:
+
+(na typu string bychom si to neukázali, protože FastApi by všechno překonvertovala na string)
+```
+@app.get("/gt_name/{name_id}")
+async def get_name(name_id: int):
+    return {"Number": name_id}
+```
+
+Jinak bychom dostali tuto krásnou chybovou hlášku
+```
+{"detail":[{"type":"int_parsing","loc":["path","name"],"msg":"Input should be a valid integer, unable to parse string as an integer","input":"pepa","url":"https://errors.pydantic.dev/2.6/v/int_parsing"}]}
+```
+<details>
+<summary>> [!TIP]ÚKOL </summary>
+Pod tento endpoint si zkopírujte tento:
+```
+@app.get("/gt_name/5")
+async def get_name():
+    return {"Number": "Vymysli si něco"}
+```
+Jaký return to vrátí?
+</details>
+
+
+2. Querry parametrs: Pracujeme s daty, které nám přijdou z tzv "body"
+```
+async def get_names(skip : int = 0, limit: int = 10):
+```
+
+Samozřejmě můžeme kombinovat Path a Querry parametrs nebo jich napsat několik
+```
+@app.put("/names/{name_id}")
+async def update_name(name_id: int, name: str, user: User):
+```
+### Endpoint POST
+Skrz body nám přijde string 'name' a ten přidáme do db
+
+Nad náš get endpoint si přidáme falešnou db, kterou budme testovat naše endpointy:
 ```
 fake_names_db = [
     "Elon Muskrat",
@@ -55,39 +122,9 @@ fake_names_db = [
     "Beyoncé Knows-all",
     "Dwayne 'The pebble' Johnson"
 ]
-
-@app.get("/gt_names/")
-async def get_names():
-    return fake_names_db
-
-```
-FastAPI používá tzv "Path and Querry parametrs"
-
-1. Path parametrs: pracujeme s daty, které jsou součástí URL adresy. 
-    Buď s nimi můžeme dál pracovat:
-```
-@app.get("/gt_name/{name_id}")
-async def get_name(name_id: int):
-    return {"Number": name_id}
-```
-    Nebo je můžeme staticky deklarovat (podmínka)
-```
-@app.get("/gt_name/5)
-async def get_name(name_id: int):
-    return {"Number": name_id}
 ```
 
-2. Querry parametrs: Pracujeme s daty, které nám přijdou z tzv "body"
-```
-async def get_names(skip : int = 0, limit: int = 10):
-```
-
-Samozřejmě můžeme kombinovat Path a Querry parametrs nebo jich napsat několik
-```
-@app.put("/names/{name_id}")
-async def update_name(name_id: int, name: str, user: User):
-```
-### Endpoint POST
+Nyní k post
 ```
 @app.post("/cr_name/")
 async def create_name(name: string):
@@ -95,6 +132,7 @@ async def create_name(name: string):
     return {"message": "Item added successfully"}
 ```
 ### Endpoint PUT
+Skrz body nám přijde int 'name_id' a string 'name'. Podle intu přepíšeme požadovaný text v db
 ```
 @app.put("/pt_name/{name_id}")
 async def update_item(name_id: int, name: str):
@@ -102,6 +140,7 @@ async def update_item(name_id: int, name: str):
     return {"message": "Item updated successfully"}
 ```
 ### Endpoint DELETE
+Skrz body nám přijde int 'name_id'. Podle intu odstraníme požadovaný text v db
 ```
 @app.put("/pt_name/{name_id}")
 async def update_item(name_id: int):
@@ -109,18 +148,20 @@ async def update_item(name_id: int):
     return {"message": "Item deleted successfully"}
 ```
 
-## pydantic
+## Pydantic
  Pydantic je knihovna na validaci dat  
  FastAPI je plně kompatibilní (a založena na) knihovně Pydantic
  
 ### Proč ho používat?
 
- Nápověda typů  
+ Nápověda pro typy 
  Rychlá validace dat  
  Kompatibilní s JSON  
  Chybové hlášky  
 
- Pydantic používá tzv BaseModely
+ Pydantic používá tzv. BaseModely
+ BaseModel -> třída, podle které fastapi (pydantic) ověřuje, že data přišla celá a ve správných typech. (Nenapsali jsme "text" do typu int)
+           -> nahrazuje query parametrs za třídu
 ```
 from pydantic import BaseModel, PositiveInt
 
@@ -128,7 +169,8 @@ class Name(BaseModel):
     name: str  
     people_with_name: PositiveInt | None = None
 ```
-Půjdeme upravit náš kód.
+
+Přepíšeme náš kód, aby využíval BaseModely
 
 ```
 from fastapi import FastAPI, HTTPException
@@ -159,8 +201,6 @@ async def get_names():
 
 @app.get("/name/{name_id}")
 async def get_item(name_id: int):
-    if name_id < 0 or name_id >= len(fake_names_db):
-        raise HTTPException(status_code=404, detail="Name not found")
     return fake_names_db[name_id]
 
 @app.post("/cr_name/")
@@ -191,13 +231,13 @@ Naimportování potřebných knihoven
 ```
 from sqlalchemy import Column, Integer, String, DateTime, Enum, MetaData, func, create_engine, inspect
 from sqlalchemy.orm import relationship, declarative_base
-
-Base = declarative_base()
 ```
 
 Vytvoření tabulky
 
 ```
+Base = declarative_base()
+
 class NameTable(Base):
 	__tablename__ = 'nameTable'
 	id = Column(Integer, primary_key=True, autoincrement=True)
