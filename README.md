@@ -69,28 +69,34 @@ Nebo takto
 
 ![alt text](code/app/img/get_ujep.png)
 
-Což je problém, protože máme db jenom na hodnoty typu string.  
-Řešením by bylo napsat podmínku do funkce, která kontroluje typy. Ale FastAPI to umí dělat sama:
+Neřekli jsme FastAPI, jaký datový typ požadujeme, tak to všechno konvertuje na typ string.  
+Kdybychom chtěli zadávat jenom hodnoty typu int, tak než to dělat přes složitou podmínku ve funkci, tak využijeme funkci FastAPI,
+která to dělá sama
 
-(na typu string bychom si to neukázali, protože FastApi by všechno překonvertovala na string)
 ```
 @app.get("/gt_name/{name_id}")
 async def get_name(name_id: int):
     return {"Number": name_id}
 ```
+Následný output je už int:  
+![alt text](code/app/img/get_int.png)
 
-Jinak bychom dostali tuto krásnou chybovou hlášku
+Jinak bychom dostali tuto krásnou chybovou hlášku od knihovny pydantic, o které se dozvíme zachvíli.
 ```
-{"detail":[{"type":"int_parsing","loc":["path","name"],"msg":"Input should be a valid integer, unable to parse string as an integer","input":"pepa","url":"https://errors.pydantic.dev/2.6/v/int_parsing"}]}
+{"detail":[{"type":"int_parsing","loc":["path","name"],  
+"msg":"Input should be a valid integer,  
+unable to parse string as an integer","input":"pepa","url":"https://errors.pydantic.dev/2.6/v/int_parsing"}]}
 ```
 <details>
 <summary>> [!TIP]ÚKOL </summary>
-Pod tento endpoint si zkopírujte tento:
-```
+Pod tento endpoint si zkopírujte tento:  
+
+```python
 @app.get("/gt_name/5")
 async def get_name():
     return {"Number": "Vymysli si něco"}
 ```
+
 Jaký return to vrátí?
 </details>
 

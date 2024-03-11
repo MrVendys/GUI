@@ -16,9 +16,6 @@ fake_names_db = [
     {"name": "Dwayne John Jonah Johnson", "people_with_name": 3}
 ]
 
-@app.get("/gt_name/5")
-async def get_name():
-    return {"Number": "Vymysli si něco"}
 @app.get("/gt_name/{name_id}")
 async def get_name(name_id: int):
     return {"Number": name_id}
