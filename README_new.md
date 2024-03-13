@@ -38,21 +38,21 @@ Alternativně můžeme do URL za náší localhost adresu připsat /docs a objev
 Nebo, pokud by se nám swaggerUI nelíbil, můžeme použít Postman.
 
 ## Co je to SWAGGERUI  
-Dopřává nám možnost vizualizovat a interagovat s naší API bez toho, abychom si museli nejdřív naprogramovat nějakou logiku.  
-Automaticky to generuje prostředí podle našich OpenAPI specifikací  
-Víc informací [zde](https://github.com/swagger-api/swagger-ui/blob/master/README.md)  
+- Dopřává nám možnost vizualizovat a interagovat s naší API bez toho, abychom si museli nejdřív naprogramovat nějakou logiku.  
+- Automaticky to generuje prostředí podle našich OpenAPI specifikací  
+- Víc informací [zde](https://github.com/swagger-api/swagger-ui/blob/master/README.md)  
  
 ![alt text](code/app/img/swagger.png)  
 
 ## Co je to Postman
-Je aplikace, která nám umožňuje testovat API požadavky. Umožňuje nám mnohem víc, než SWAGGER Interface, ale pro naší malou aplikaci můžeme použít oboje  
+- Je aplikace, která nám umožňuje testovat API požadavky. Umožňuje nám mnohem víc, než SWAGGER Interface, ale pro naší malou aplikaci můžeme použít oboje  
 
 ![alt text](code/app/img/Postman.png)  
 
 # Vytvoření databáze
-Tím, že API většinou komunikuje s nějakou databází, tak pro názornou ukázku budeme používat SQLite s SQLAlchemy.  
-Zároveň budeme neustále refreshovat naší aplikaci, tak by se nám i mazala cookie data, což by zdržovalo.  
-Zde je kód pro vytvoření databáze:  
+- Tím, že API většinou komunikuje s nějakou databází, tak pro názornou ukázku budeme používat SQLite s SQLAlchemy.  
+- Zároveň budeme neustále refreshovat naší aplikaci, tak by se nám i mazala cookie data, což by zdržovalo.  
+- Zde je kód pro vytvoření databáze:  
 
 ```  
 from fastapi import FastAPI
@@ -92,8 +92,8 @@ app = FastAPI()
 # Základní Endpointy  
 
 ## GET endpoint  
-O endpointech jsme si už říkali. Toto je základní syntaxe endpointů, specificky GET.  
-GET slouží pro získávání dat dle nějakých specifikací. (O těch si víc povíme níže)
+- O endpointech jsme si už říkali. Toto je základní syntaxe endpointů, specificky GET.  
+- GET slouží pro získávání dat dle nějakých specifikací. (O těch si víc povíme níže)
 ```
 @app.get("/")
 async def get():
@@ -119,16 +119,16 @@ async def get_name():
 ``` 
 
 ## POST endpoint  
-POST je endpoint naopak pro přidávání/odesílání dat uživatelem.  
+- POST je endpoint naopak pro přidávání/odesílání dat uživatelem.  
 
 ```
 @app.post("/")
 async def create_name(name: str):
     return {"message": f"Item {name} added successfully"}
 ```
-K tomu potřebujeme už nějakou proměnou, nějaké "query", která nám nese informace, které jsme poslali.  
+- K tomu potřebujeme už nějakou proměnou, nějaké "query", která nám nese informace, které jsme poslali.  
 
-ÚKOL
+### ÚKOL
 
 
 Zkuste si doplnit POST endpoint tak, aby fungovalo přidávání jména do db.   
@@ -155,13 +155,13 @@ async def post_name(post_name: str):
 </details>
   
 ## PUT endpoint  
-U endpointu PUT už potřebujeme parametry 2. Jeden identifikátor a druhý, čím to chceme nahradit
+- U endpointu PUT už potřebujeme parametry 2. Jeden identifikátor a druhý, čím to chceme nahradit
 ```
 @app.put("/put_name/")
 async def put_name(name_id: int, name: str):
     return {"message": f"{old_name} updated successfully to {name}"}
 ```  
-ÚKOL
+### ÚKOL
 
 Zkuste zaměnit jméno, které jste si přidali za jiné.    
 > [!TIP]
@@ -181,7 +181,7 @@ async def post_name(post_name: str):
 </details>
 
 ## DELETE endpoint
-A poslední základné endpoint je nečekaně na mazání záznamu. Tady už potřebujeme akorát identifikátor
+- A poslední základné endpoint je nečekaně na mazání záznamu. Tady už potřebujeme akorát identifikátor
 ```
 @app.delete("/del_name/")
 async def update_item(name_id: int):
@@ -189,13 +189,14 @@ async def update_item(name_id: int):
     return {"message": "Item deleted successfully"}
 ```  
 Můžeme to otestovat přes SwaggerUI  
+
 ![alt text](code/app/img/delete_test.png)  
 
 # Path a Query parametry
-Jak už jsme si mohli všimnout, FastAPI používá nějakou formu parametrů / proměnných. Přesněji se dělí na Path a Query.  
+- Jak už jsme si mohli všimnout, FastAPI používá nějakou formu parametrů / proměnných. Přesněji se dělí na Path a Query.  
 ## Path
-Deklarují se přímo v Path pomocí {} a jako parametr ve funkci.  
-A jak je zvykem proměnných, můžeme s nimi dále pracovat
+- Deklarují se přímo v Path pomocí {} a jako parametr ve funkci.  
+- A jak je zvykem proměnných, můžeme s nimi dále pracovat
 ```
 @app.get("/gt_name/{name}")
 async def get_name(name):
@@ -239,8 +240,8 @@ unable to parse string as an integer","input":"pepa","url":"https://errors.pydan
 </details>
 
 ## Query 
-U Path jsme psali hodnoty přímo do URL a FastAPI si je potom zpracovalo. U Query se data posílají přes tzv. "body".  
-Proměnné se deklarují jen v () u funkce. Jakmile proměnná není součástí URL, je automaticky považována za Query proměnnou.  
+- U Path jsme psali hodnoty přímo do URL a FastAPI si je potom zpracovalo. U Query se data posílají přes tzv. "body".  
+- Proměnné se deklarují jen v () u funkce. Jakmile proměnná není součástí URL, je automaticky považována za Query proměnnou.  
 
 ```
 @app.get("/gt_names/")
@@ -285,7 +286,7 @@ Rovnou můžeme nastavit defaultní hodnoty
 async def get_names(skip: int = 0, limit: int = 0):
     return session.query(Names).limit(limit).offset(skip).all()
 ```
-
+  
 Samozřejmě můžeme kombinovat Path a Querry parametrs nebo jich napsat několik
   
 
@@ -317,7 +318,7 @@ return {"query": query}
 
 Úplně stejně můžeme validovat i proměnné v Path, akorát nebudeme importovat ~~Query~~, ale **Path**
 
-### Ukoly na Query
+### Úkoly na Query
 1) Zkuste si definovat promennou typu bool. Napište si if podmínku na kontrolu True False + výpis.  
 Zkuste zadávat všemožné obměny hodnot typu pravda (true, True, on, yes..) 
 
@@ -361,9 +362,11 @@ return {"First name:": name.first_name, "Last name": name.last_name}
 ```
 
 
-### Ukoly na Pydantic
+### Úkol na Pydantic
 
-Zde máte přepsaný tabulku a hodnoty odpovídajíc BaseModelu.
+Zde máte přepsaný tabulku a hodnoty odpovídajíc BaseModelu.  
+
+```
 class Name(Base):
     __tablename__ = "names"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -383,6 +386,7 @@ fake_names = [
     Names(name="Beyoncé", last_name="Knows-all", age=42),
     Names(name="Dwayne 'The pebble'", last_name="Johnson", age=51),
 ] 
+```  
 
 ÚKOL
 
@@ -415,4 +419,3 @@ async def get_names(skip: int = 0, limit: int = 0):
 
 </details>
 
-# Ukázka použití

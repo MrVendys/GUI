@@ -55,7 +55,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-async def get_name():
-    result = session.query(Names).all()
-    return result
+
+@app.get("/gt_names/")
+async def get_names(name: Names):
+    return {"Number": name_id, "Name": name}

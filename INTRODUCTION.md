@@ -1,15 +1,16 @@
 ### FastAPI  
 Abychom se dále mohlo bavit o FastAPI, tak nejdřív se musíme ujisti, že každý chápe pojem API.
 ## Co je to API
- - API (Application Programming Interface) je soubor pravidel, protokolů a nástrojů, které umožňují různým softwarovým aplikacím vzájemně komunikovat.
+- API (Application Programming Interface) je soubor pravidel, protokolů a nástrojů, které umožňují různým softwarovým aplikacím vzájemně komunikovat.
 
 # Jak to funguje
-Při používání se aplikace připojí k internetu a odesílá data na server. Server pak data zpracuje a odešle je zpět do aplikace. 
-Aplikace pak data interpretuje a prezentuje vám je v čitelné podobě. 
+- Při používání se aplikace připojí k internetu a odesílá data na server. Server pak data zpracuje a odešle je zpět do aplikace. 
+- Aplikace pak data interpretuje a prezentuje vám je v čitelné podobě. 
+
 ![alt text](https://images.datacamp.com/image/upload/v1664210695/A_simple_API_architecture_design_f98bfad9ce.png)  
 
-Často se tohle fungování přirovnáva k restauraci.    
-Zákazník si chce něco objednat (má požadavek), tak si zavolá číšníka (API), který jeho požadavek předá kuchaři (někdo/něco, kdo připřavý požadavek). Následně číšník zase přijde a odnese objednávku zpátky k zákazníkovi.
+- Často se tohle fungování přirovnáva k restauraci.    
+- Zákazník si chce něco objednat (má požadavek), tak si zavolá číšníka (API), který jeho požadavek předá kuchaři (někdo/něco, kdo připřavý požadavek). Následně číšník zase přijde a odnese     objednávku zpátky k zákazníkovi.
 
 ## Co je FastAPI
  - Vysoce výkonný webový framework pro vytváření rozhraní API v jazyce Python.
@@ -22,6 +23,7 @@ https://example.com/items/foo
 ```
 /items/foo
 ```  
+
 >[!HINT] 
 > Dále to budu nazývat endpointy...
 
