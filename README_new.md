@@ -1,3 +1,4 @@
+# FASTAPI
 # Návod na instalaci  
 
 :one: Vytvoření virtuálního prostředí
@@ -34,7 +35,7 @@ Naše aplikace beží na localhostu na adrese, kterou nám to vypsalo do konzole
 
 Alternativně můžeme do URL za náší localhost adresu připsat /docs a objeví se nám swaggerUI.  
 
-Nebo, pokud by se nám SWAGGERUI nelíbil, můžeme použít Postman.
+Nebo, pokud by se nám swaggerUI nelíbil, můžeme použít Postman.
 
 ## Co je to SWAGGERUI  
 Dopřává nám možnost vizualizovat a interagovat s naší API bez toho, abychom si museli nejdřív naprogramovat nějakou logiku.  
@@ -50,7 +51,7 @@ Je aplikace, která nám umožňuje testovat API požadavky. Umožňuje nám mno
 
 # Vytvoření databáze
 Tím, že API většinou komunikuje s nějakou databází, tak pro názornou ukázku budeme používat SQLite s SQLAlchemy.  
-Tím, že budeme neustále refreshovat naší aplikaci, tak by se nám i mazala cookie data, což by zdržovalo.  
+Zároveň budeme neustále refreshovat naší aplikaci, tak by se nám i mazala cookie data, což by zdržovalo.  
 Zde je kód pro vytvoření databáze:  
 
 ```  
@@ -59,7 +60,7 @@ from sqlalchemy import Column, Integer, String, create_engine, MetaData
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 Base = declarative_base()
-class Name(Base):
+class Names(Base):
     __tablename__ = "names"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(25))
@@ -106,14 +107,14 @@ Teď spustíme aplikaci. Podíváme do prohlížeče na URL adresu, kterou nám 
 {"message": "Hello World"}
 ```
   
-To samé si můžeme vyzkoušet ve SwaggerUI (za "/" dopsat docs)  
+To samé si můžeme vyzkoušet ve SwaggerUI [zde](http://127.0.0.1:8000/docs)  
   
 
 Zkusíme si vypsat všechny data z databáze:  
 ``` 
 @app.get("/")
 async def get_name():
-    result = session.query(Name).all()
+    result = session.query(Names).all()
     return result
 ``` 
 
@@ -138,7 +139,7 @@ Otestujte pomocí SwaggerUI
 ![alt text](code/app/img/ukol_post2.png)  
 
 > [!TIP]
-> Rozlište si cesty u jednotlivých endpointů. Pokud by byli stejné, tak by FastAPI nevědělo, na jaký endpoint se dotazujete
+> Rozlište si cesty u jednotlivých endpointů. Pokud by byli stejné, tak by FastAPI nevědělo, na jaký endpoint se dotazujete  
 > např @app.get("/get_name") AND @app.post("/post_name")  
 
 <details>
@@ -147,7 +148,7 @@ Otestujte pomocí SwaggerUI
 ``` 
 @app.post("/post_name")
 async def post_name(post_name: str):
-    result = session.add(Name(name=post_name))
+    result = session.add(Names(name=post_name))
     return {"message": "Item added successfully"}
 ``` 
 
@@ -174,7 +175,7 @@ Zase otestujte přes SwaggerUI
 ``` 
 @app.post("/post_name")
 async def post_name(post_name: str):
-    result = session.add(Name(name=post_name))
+    result = session.add(Names(name=post_name))
     return {"message": "Item added successfully"}
 ``` 
 </details>
@@ -184,7 +185,7 @@ A poslední základné endpoint je nečekaně na mazání záznamu. Tady už pot
 ```
 @app.delete("/del_name/")
 async def update_item(name_id: int):
-    session.query(Name).filter(Name.id == name_id).delete()
+    session.query(Names).filter(Names.id == name_id).delete()
     return {"message": "Item deleted successfully"}
 ```  
 Můžeme to otestovat přes SwaggerUI  
@@ -224,7 +225,7 @@ Následný output už bude int:
 ![alt text](code/app/img/get_int.png)
 
 
-### Ukoly na Path
+### Úkoly na Path
 1) Zkuste místo čísla vložit nějaký řetězec. Co se stane?
 <details>
 <summary> Vysvětlení </summary>
@@ -235,16 +236,6 @@ Jak víme, lidi jsou hloupý a s velkou pravděpodobností zkusí zadat jinou ne
 "msg":"Input should be a valid integer,  
 unable to parse string as an integer","input":"pepa","url":"https://errors.pydantic.dev/2.6/v/int_parsing"}]}
 ```
-</details>
-
-2) Zkuste si pozměnit GET endpoint aby PATH parametr byl typu string a vypsat ji.
-Co se stane, když tam zadám numerickou hodnotu? A co když zadám datum?
-> [!TIP]
-> typ string se určí **proměnná: str**  
-
-<details>
-<summary> Vysvětlení </summary>
-Ano, chybouvou hlášku to nevypsalo. Páč FastAPI je založeno na kihovně Pydantic, která každou hodnotu překonvertuje na string
 </details>
 
 ## Query 
@@ -270,8 +261,9 @@ return {"Number": name_id, "Name": name}
 http://127.0.0.1:8000/gt_namse/?name_id=5&name=Venca
 ```  
 
+![alt text](code/app/img/get_qpar.png)  
+
 Nebo můžeme testovat pomocí SwaggerUI  
-![alt text](code/app/img/get_qpar.png)
 
 Query proměnné můžeme nastavit defaultni hodnotu, nebo je dokonce nastavit na nepovinné
 
@@ -286,22 +278,24 @@ return {"Number": name_id, "Name": name}
 
 Když vypisujeme z databáze, která má strašně moc hodnot, tak můžeme využít paramtry **skip** a **limit**.  
 Rovnou můžeme nastavit defaultní hodnoty
+  
 
 ```
 @app.get("/get_names/")
 async def get_names(skip: int = 0, limit: int = 0):
-    return session.query(Name).limit(limit).offset(skip).all()
+    return session.query(Names).limit(limit).offset(skip).all()
 ```
 
 Samozřejmě můžeme kombinovat Path a Querry parametrs nebo jich napsat několik
+  
 
 ```
 @app.put("/names/{name_id}")
 async def update_name(name_id: int, name: str):
 return {"Number": name_id, "Name": name}
 ```
-
-
+  
+  
 Dále můžeme validovat data pomocí knihoven Query a Annotated, například:  
 
 ```
@@ -338,7 +332,7 @@ async def get_name(bl: bool = False):
     else:
         return "Hodnota překonvertována na False"
 ```
-Zase nám pomáha knihovna Pydantic a všechno konvertuje na hodnotu True  
+Zase nám pomáha knihovna Pydantic. Hodnoty jako jsou True, true, on, yes a 1 konvertuje na True  
 
 </details>
 
@@ -350,9 +344,9 @@ Nejprve si naimportujeme pydantic s BaseModel
 ```
 from pydantic import BaseModel
 ```
-Teď si deklarujeme náš data model, která dedí z BaseModel
+Teď si deklarujeme náš data model, který dědí z BaseModel
 ```
-class Name(BaseModel):
+class Names(BaseModel):
     first_name: str
     last_name: str | None = None
     age: int
@@ -361,7 +355,7 @@ Tím, že jsme si vytvořili tento model jako třídu, tak už nemusíme všechn
 Proměnné, které nejsou definované jako nepovinné (Union[str, None] **= None**), jsou vždy <code style="color:red">povinné</code>
 ```
 @app.get("/names/")
-async def update_name(name: Name):
+async def update_name(name: Names):
 name_dict = name.dict()
 return {"First name:": name.first_name, "Last name": name.last_name}
 ```
@@ -408,7 +402,8 @@ async def post_name(f_name: str, l_name: str | None = None, ag: int):
 
 ÚKOL
 
-Upravte endpoint GET, aby přeskočil první 2 hodnoty a vypsal následujích 5
+Upravte endpoint GET podle následujícího screenu:  
+
 <details>
 <summary> Řešení </summary>
 

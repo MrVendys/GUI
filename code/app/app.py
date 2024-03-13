@@ -55,28 +55,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/get_names/")
-async def get_names(skip: int = 2, limit: int = 5):
-    result = session.query(Names).limit(limit).offset(skip).all()
+@app.get("/")
+async def get_name():
+    result = session.query(Names).all()
     return result
-
-
-@app.post("/post_name")
-async def post_name(post_name: str):
-    result = session.add(Names(name=post_name))
-    return {"message": "Item added successfully"}
-
-@app.put("/put_name/")
-async def put_name(name_id: int, name: str):
-    session.query(Names).filter(Name.id == name_id).update({"name": name})
-    return {"message": f"Name updated successfully to {name}"}
-
-@app.delete("/del_name/")
-async def dalete_item(name_id: int):
-    session.query(Names).filter(Name.id == name_id).delete()
-    return {"message": "Item deleted successfully"}
-
-
-@app.get("/pm_get/{id}")
-async def get_names(id: int):
-    return id
