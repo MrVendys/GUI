@@ -35,7 +35,16 @@ V mém případě:
 ```
 uvicorn main:app --reload
 ```  
-Naše aplikace beží na localhostu na adrese, kterou nám to vypsalo do konzole.
+Naše aplikace beží na localhostu na adrese, kterou nám to vypsalo do konzole.  
+
+Alternativně můžeme do URL za náší localhost adresu připsat /docs a objeví se nám swaggerUI.  
+
+## Co je to SWAGGERUI  
+Dopřává nám možnost vizualizovat a interagovat s naší API bez toho, abychom si museli nejdřív naprogramovat nějakou logiku.  
+Automaticky to generuje prostředí podle našich OpenAPI specifikací  
+Víc informací [zde](https://github.com/swagger-api/swagger-ui/blob/master/README.md)  
+ 
+![alt text](code/app/img/swagger.png)  
 
 ## Programování :computer:
 Jakmile máme připravené pracovní prostředí, je čas programovat
@@ -50,23 +59,12 @@ async def get_name():
 ```  
 Teď, když se podíváme zpátky na náš localhost, tak by nám to mělo vypsat "Hello": "This is your get endpoint".  
 
-Alternativně můžeme do URL za náší localhost adresu připsat /docs a objeví se nám swagger  
-
-
-## Co je to SWAGGER
-<details>
-<summary> Swagger </summary>
-    Dopřává nám možnost vizualizovat a interagovat s naší API bez toho, abychom si museli nejdřív naprogramovat nějakou logiku.  
-    Automaticky to generuje prostředí podle našich OpenAPI specifikací
-    Víc informací [zde](https://github.com/swagger-api/swagger-ui/blob/master/README.md)
-</details>  
-![alt text](code/app/img/swagger_get.png)  
-
+Ve Swagger UI:  
 Po kliknutí vpravo na "Try it out" a poté dole na "Execute" se nám zavolá ten samý endpoint, jako přes URL.  
+![alt text](code\app\img\swagger_get.png)  
+
 Momentálně je jedno, přes co si to budete žkoušet.  
   
-**Zpátky k GET**  
-
 FastAPI používá tzv "Path and Querry parametrs"
 
 **1. Path parametrs:** pracujeme s daty, které jsou součástí URL adresy.  
@@ -120,11 +118,11 @@ async def get_name():
 
 Jaký return to vrátí?
 Proč nám to nevypíše {"Number": "Vymysli si něco"}?
->[!WARNING]
+> [!WARNING]
 > Záleží na pořadí endpointů ve scriptu. Ten, co je dřív si ten požadavek vezme a zpracuje.
 </details>
---------------------------------------------------------------------------     
-
+  
+--------------------------------------------------------------------------
 **2. Querry parametrs:** Pracujeme s daty, které nám přijdou z tzv "body"
 ```
 @app.get("/gt_name/")
@@ -140,8 +138,10 @@ async def update_name(name_id: int, name: str, user: User):
 Pro naše testování můžeme použít 2 způsoby poslání dat:  
 Data pošleme buď pomomocí napsání do URL:  
 ![alt text](code/app/img/get_qpar.png)  
-Nebo přes swagger  
+Nebo přes swaggerUI  
 
+Ukol na path a query parametrs. Dát sem výstupy
+--------------------------------------------------------------------------
 ### Endpoint POST
 Skrz body nám přijde string 'name' a ten přidáme do db
 
@@ -164,20 +164,25 @@ fake_names_db = [
 Syntax na endpoint post
 ```
 @app.post("/ps_name/")
-async def create_name(name: string):
+async def create_name(name: str):
     fake_names_db.append(name)
-    return {"message": "Item added successfully"}
+    return {"message": f"Item added successfully"}
 ```  
+Pomocí spuštění GET můžeme otestovat, jestli se příkaz provedl  
+![alt text](code/app/img/post_test.png) 
 
+--------------------------------------------------------------------------
 ### Endpoint PUT
 Skrz body nám přijde int 'name_id' a string 'name'. Podle intu přepíšeme požadovaný text v db
 ```
 @app.put("/pt_name/")
 async def update_item(name_id: int, name: str):
     fake_names_db[name_id] = name
-    return {"message": "Item updated successfully"}
+    return {"message": f"Item {fake_names_db[name_id]} updated successfully"}
 ```  
+![alt text](code/app/img/post_test.png)  
 
+--------------------------------------------------------------------------
 ### Endpoint DELETE
 Skrz body nám přijde int 'name_id'. Podle intu odstraníme požadovaný text v db
 ```
@@ -185,8 +190,9 @@ Skrz body nám přijde int 'name_id'. Podle intu odstraníme požadovaný text v
 async def update_item(name_id: int):
     del fake_names_db[name_id]
     return {"message": "Item deleted successfully"}
-```
-  
+```  
+![alt text](code/app/img/delete_test.png) 
+--------------------------------------------------------------------------
 ## Pydantic
 
 Pydantic používá tzv. BaseModely
@@ -282,3 +288,11 @@ class NameTable(Base):
 	id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(25))
 ```
+## Cvičení  
+Zkuste si propojit náš kód s sqlite databází a zkusit si nějaké edpointy
+
+# Děkujeme za pozornost
+Toto je konec našeho vzdělávacího okénka.  
+Z FastAPI a Pydantic jsme ukázali akorát holý základ. Je tam tolik dalších věcí a možností, co s tím jde dělat, 
+že ty z vás, které to trochu zaujalo, tak se do toho ponořte klidně víc.  
+Kolegové po nás mají taktéž FastAPI a ti už to budou probírat trochu víc do hloubky.

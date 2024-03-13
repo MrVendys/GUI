@@ -1,15 +1,23 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Path
 from pydantic import BaseModel, PositiveInt
 
-class Name(BaseModel):
-    name: str  
-    people_with_name: PositiveInt | None = None
-
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, PositiveInt, EmailStr
+fake_names_db = [
+    "Elon Muskrat",
+    "Johnny Depp-ression",
+    "Taylor Drift",
+    "Brad Pitstop",
+    "Angelina Joliet",
+    "Kim Carcrashian",
+    "Leonardo DiCapuccino",
+    "Miley Virus",
+    "Beyoncé Knows-all",
+    "Dwayne 'The pebble' Johnson"
+]
 
 app = FastAPI()
-
-@app.get("/gt_name")
-async def get_name():
-    return {"Hello": "This is your get endpoint"}
+@app.get("/names")
+async def get_name(bl: bool = False):
+    if bl:
+        return "Hodnota překonvertována na True"
+    else:
+        return "Hodnota překonvertována na False"
