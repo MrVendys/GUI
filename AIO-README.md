@@ -5,25 +5,11 @@
 ```
 pip install asyncio
 ```
-## Principy programování v rámci synchronizace
-```
-def funkce1():
-  ....
-def funkce2():
-  ....
-def funkce3():
-  ....
-```
-```
-funkce1()
-funkce2()
-funkce3()
-```
-# Vykonávání kódu
+# 1) Vykonávání kódu
 + Synchronní programování
 + Asynchronní programování
 
-## Synchronní programování
+## 1.1) Synchronní programování
 + Funkce se spouští postupně, každá funkce musí být dokončena než začne následující
 ### Pro lepší představení:
 *zavolání funkcí*  
@@ -53,7 +39,7 @@ funkce3 ✔️
 
 **funkce1** **->** **funkce2** **->** **funkce3**
 
-## Asynchronní programování
+## 1.2) Asynchronní programování
 + Funkce se spouští dle volného prostoru (spustí se jedna a pokud je prostor spustí se jiná)
 ### Pro lepší pochopení:
 
@@ -73,14 +59,14 @@ funkce2 ✔️
 funkce1 ✔️  
 funkce2 ✔️ 
 
-# Spouštění kódu
+# 2) Spouštění kódu
 + váže se na hardware
 
 + single-thread
 + multi-thread
 + multi-process
 
-## single-thread
+## 2.1) single-thread
 + všechny funkce se spouští v rámci jednoho vlákna 'kontextu'
 + typicky pro synchronní ale i asynchronní model
 
@@ -106,7 +92,7 @@ funkce2 ✔️
 | 4 | funkce1 ✔️ |
 |  | funkce2 ✔️ |
 
-## multi-thread
+## 2.2) multi-thread
 + funkce jsou rozdělený do určitého počtu vláken tj. jedno vlákno spouští x funkcí, druhé vlákno spouští y funkcí, ....
 + funkce se mohou spouštět paralélně (najednou)  
 + **! správa vláken a synchronizace mezi nimi**
@@ -119,7 +105,7 @@ funkce2 ✔️
 | 2 | funkce1 ✔️ | funkce2 ▶️ |
 | 3 | funkce1 ✔️ | funkce2 ✔️ |
 
-## multi-process
+## 2.3) multi-process
 + podobné multi-thread
 + místo vláken využívá procesy, tj. využívá jádra procesoru  
 + **každý proces má svůj paměťový prostor**
@@ -131,14 +117,14 @@ funkce2 ✔️
 | 2 | funkce1 ▶️ | funkce2 ▶️ |
 | 3 | funkce1 ✔️ | funkce2 ✔️ |
 
-# AsyncIO
-### 1)
+# 3) AsyncIO
+### 3.1)
 importujeme asyncio
 ```
 import asyncio
 ```
-### 2)
-+ Asynchronní programování nejčastěji využíváme při I/O operacích. Tyto operace (čekání na odpověď serveru) budeme simulovat pomocí příkazu ''*await asyncio.sleep(x)*'', kde x představuje čas.
+### 3.2)
++ ''*await asyncio.sleep(x)*''
 
 vytvoříme asynchronní funkci a spustíme ji 
 ```
@@ -151,8 +137,8 @@ async def main():
 
 asyncio.run(main())
 ```
-### 3)
-+ Prodleva mezi vypsáním "A" a "B" je znatelná. Co kdybychom tuhle prodlevu (v praxi čekání na odpoveď během které program stojí a nic nedělá) využili k vykonání jiné funkce.  pojďme tedy vytvořit další asynchronní funkci, která toto místo vyplní.
+### 3.3)
++ Pojďme vytvořit další asynchronní funkci, která volné časové místo vyplní.
 ```
 import asyncio
 
@@ -168,12 +154,9 @@ async def vyplnujici_funkce():
 
 asyncio.run(main())
 ```
-### 4)
-+ Zdá se vám toto jako asynchronní spuštění? - Ne.   
-+ Pomocí příkazu "*await*" jsme vynutili spuštění vyplňující funkce - program ale čekal na dokončení vyplňující funkce i přesto, že se v ní nachází volný prostor (asyncio.sleep(2)).   
-+ Toto vynucení je, ale velmi podobné synchronnímu programování, kde prostě během výpisu spustíme jinou funkci - tj. nevyužíváme volného prostoru (čas).
-
-Pojďme tedy, využívat volného prostoru v rámci času a využijme tak opravdové asynchronní programování.
+### 3.4)
++ Vynutily jsme spuštění a počkání na vyplňující funcki
++ Pojďme docílit spuštění bez explicitního vynucení a čekání - vytvoříme task, ten obsahuje funkci, která se spustí jestliže na spuštění bude volný časový prostor.
 ```
 import asyncio
 
@@ -189,10 +172,7 @@ async def vyplnujici_funkce():
 
 asyncio.run(main())
 ```
-### 5)
-+ Po spuštění funkce "*main()*" jsme zjistili, že v ní existuje volný časový prostor až na konci funkce tj. po vykonání poslední operace (print("B")).  
-+ Následně se spustila vyplňující funkce, která ale nedoběhla celá - existuje v ní volný prostor (asyncio.sleep()) a to se hlavní funkci nelíbí.  
-  
+### 3.5)
 + Jestliže chceme, aby hlavní funkce na vyplňující funkci i tak počkala můžeme přidat příkaz "*await task*".  
 + Tento příkaz se postará o to, aby si vyplňující funkce našla alespoň jeden prostor na spuštění - typicky na konci hlavní funkce 
 ```
@@ -211,7 +191,7 @@ async def vyplnujici_funkce():
 
 asyncio.run(main())
 ```
-### 6)
+### 3.6)
 + Názornějším scénářem nám bude situace, kde je časový prostor na spuštění alespoň části vyplňující funkce.
  
 (main.sleep < vyplnujici_funkce.sleep)
@@ -231,7 +211,7 @@ async def vyplnujici_funkce():
 
 asyncio.run(main()
 ```
-### 7)
+### 3.7)
 + Pojďme hlavní funkci požádat o pokračování vyplnujici funkce ve více časových prostorech tj. využití sleep() a prostoru na konci hlavní funkce.
 ```
 import asyncio
@@ -250,8 +230,7 @@ async def vyplnujici_funkce():
 
 asyncio.run(main()
 ```
-### 7)
-+ Pořád, ale neelegantně vynucujeme časový prostor a nevyužíváme "samovolné" asynchronní spouštění těchto funkcí.  
+### 3.8)  
 + Pojďme vytvořit scénář, kde žádne vynucování neexistuje a funkce se spouští číste vzhledem k volnému časovému prostoru.
 ```
 import asyncio
@@ -269,7 +248,7 @@ async def vyplnujici_funkce():
 
 asyncio.run(main())
 ```
-### 8)
+### 3.9)
 + Pokud chceme, aby vyplňující funkce vracela nějakou hodnotu použijeme příkaz "*await task*"  
 > ! Tento přikaz použijeme jen když jsme si jisti, že vyplňující funkce byla již dokončena !  
 > ! Pokud vyplňující funkce ještě nebyla dokončena tento příkaz vynutí spuštění vyplňující funkce a bude na ni čekat nehledě na volný časový prostor !  
@@ -288,13 +267,12 @@ async def vyplnujici_funkce():
   await asyncio.sleep(2)
   print("2")
 
+  return "HOTOVO"
+
 asyncio.run(main())
 ```
-### 9)
-+ V případě, že máme více vyplňujících funkcí (tasků), které chceme pustit "současně" tj. zahájení je současné (doopravdy se vykonává funkce pro kterou je časový prostor - !nejedná se o multi-thread nebo multi-process! využijeme nástroje "*gather(funkce1,funkce2,funkce3, ....)*"  
-+ await asyncio.gather(x,y) se postará o to, aby se funkce *x,y* spustily a počká než se všechny dokončí.
-
-Ten nám tasky shromáždí a bude je spouštět dle volného časového prostoru -> horší manévrování, ale stejná podstata předešlých úkolů
+### 3.10)
++ await asyncio.gather(x,y) se postará o to, aby se funkce *x,y* spustily a počká než se tyto funkce dokončí (vzájemně se střídají o prostor).
 ```
 import asyncio
 
@@ -316,7 +294,7 @@ async def vyplnujici_funkce2():
 
 asyncio.run(main())
 ```
-### 10)
+### 3.11)
 + Pokud bychom chtěli spouštět více vyplňujících funkcích, ale jen v případě, že na ně bude prostor vzhledem k dění v hlavní funkci, můžeme toto shromaždění (gather) zaobalit v nove funkci.  
 -> lepší manévrování než v předešlém kroku
 ```
@@ -350,7 +328,7 @@ async def main():
 asyncio.run(main())
 ```
 
-## Souhrn příkazů
+## 4) Souhrn příkazů
 
 | příkaz | popis       |
 |------------|------------|
@@ -367,9 +345,9 @@ kdy použít **gather()**:
 kdy použít **create_task a vlastní načasování await**:  
 *Při nutnosti větší kontroly nad jednotlivými úlohami, jejichž dokončení může být flexibilnější*
 
-# Cvičení
+# 5) Cvičení
 
-## 1) Asynchronní sběr dat
+## 5.1) Asynchronní sběr dat
 >Vytvořte 3 asynchronní funkce, které simulují stahování dat z různých zdrojů (parametry funkce jsou: název zdroje: str, doba stahování: int).  
 >Následně tyto asynchronní funkce parálélně spusťte.  
 >+ doba stahování pro každý zdroj by měla být jiná
