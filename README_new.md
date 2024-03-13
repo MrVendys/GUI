@@ -41,104 +41,144 @@ Víc informací [zde](https://github.com/swagger-api/swagger-ui/blob/master/READ
  
 ![alt text](code/app/img/swagger.png)  
 
-# Základní Endpointy  
-Ještě než začneme, tak API většinou komunikuje s nějakou databází. Abychom si mohli řádně ukázat práci s API, využieme knihovnu SQLAlchemy a db SQLite
-```  
-from sqlalchemy import Column, Integer, String, DateTime, Enum, MetaData, func, create_engine, inspect
-from sqlalchemy.orm import relationship, declarative_base
-```  
+# Vytvoření databáze
+Tím, že API většinou komunikuje s nějakou databází, tak pro názornou ukázku budeme používat SQLite s SQLAlchemy.  
+Tím, že budeme neustále refreshovat naší aplikaci, tak by se nám i mazala cookie data, což by zdržovalo.  
+Zde je kód pro vytvoření databáze:  
 
-class Name(Base):
-    __tablename__ = 'zakaznik'
-    
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    jmeno = Column(String(25))
-    prijmeni = Column(String(25))
-    vek = Column(Integer(3))
-    
-    kontakt = relationship("Zakaznik_kontakt")
-    adresa = relationship("Zakaznik_adresa")
-    
+```  
+from fastapi import FastAPI
+from sqlalchemy import Column, Integer, String, create_engine, MetaData
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 Base = declarative_base()
+class Name(Base):
+    __tablename__ = "names"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(25))
 
 engine = create_engine('sqlite:///:memory:')
+metadata = MetaData()
 Base.metadata.create_all(engine)  # Vytvoření tabulek
-
 Session = sessionmaker(bind=engine)
+
+fake_names = [
+    Name(name="Elon Muskrat"),
+    Name(name="Johnny Depp-ression"),
+    Name(name="Taylor Drift"),
+    Name(name="Brad Pitstop"),
+    Name(name="Angelina Joliet"),
+    Name(name="Kim Carcrashian"),
+    Name(name="Leonardo DiCapuccino"),
+    Name(name="Miley Virus"),
+    Name(name="Beyoncé Knows-all"),
+    Name(name="Dwayne 'The pebble' Johnson")
+]
+session = Session()
+session.add_all(fake_names)
+session.commit()
+
+app = FastAPI()
+```  
+
+# Základní Endpointy  
+
 ## GET endpoint  
+O endpointech jsme si už říkali. Toto je základní syntaxe endpointů, specificky GET.  
+GET slouží pro získávání dat dle nějakých specifikací. (O těch si víc povíme níže)
 ```
 @app.get("/")
 async def get():
     return {"message": "Hello World"}
 ```  
-Spustíme aplikaci. Podíváme do prohlížeče na URL adresu, kterou nám to napsalo v konzoli.  
+Nejdříve definujeme, jaké metody se tento endpoint bude týkat @app.get, za to napíšeme cestu, pro kterou to bude platit ("nase/uzasna/cesta").  
+Poté definujeme metodu, kterou do má vždy zavolat a do ní příslušný kód.  
+
+Teď spustíme aplikaci. Podíváme do prohlížeče na URL adresu, kterou nám to napsalo v konzoli a mělo by nám to vypsat toto:    
 ```
 {"message": "Hello World"}
-```  
-Teď si nakonec Path v URL připíšeme /docs a otevře se nám SwaggerUI, kde to samé můžeme vyzkoušet.  
+```
+  
+To samé si můžeme vyzkoušet ve SwaggerUI (za "/" dopsat docs)  
 ![alt text](code\app\img\swagger_get.png)  
+  
+
+Zkusíme si vypsat všechny data z databáze:  
+``` 
+@app.get("/")
+async def get_name():
+    result = session.query(Name).all()
+    return result
+``` 
+
 ## POST endpoint  
+POST je endpoint naopak pro přidávání/odesílání dat uživatelem.  
+
 ```
 @app.post("/")
 async def create_name(name: str):
     return {"message": f"Item {name} added successfully"}
-```  
-
-Pro vizuální otestování si přidáme do applikace "databázi" a upravíme si endpointy.  
 ```
-fake_names_db = [
-    "Elon Muskrat",
-    "Johnny Depp-ression",
-    "Taylor Drift",
-    "Brad Pitstop",
-    "Angelina Joliet",
-    "Kim Carcrashian",
-    "Leonardo DiCapuccino",
-    "Miley Virus",
-    "Beyoncé Knows-all",
-    "Dwayne 'The pebble' Johnson"
-]
+K tomu potřebujeme už nějakou proměnou, nějaké "query", která nám nese informace, které jsme poslali.  
 
-@app.post("/cr_name")
-async def create_name(name: str):
-    fake_names_db.append(name)
-    return {"message": f"Item added successfully"}
+ÚKOL
 
-@app.get("/gt_name")
-async def get_name():
-    return fake_names_db
-```
 
-A otestujeme, jestli se nám povedlo přidat něco do "databáze"
-Web
+Zkuste si doplnit POST endpoint tak, aby fungovalo přidávání jména do db.   
+Otestujte pomocí SwaggerUI  
 
-SwaggerUI: 
-![alt text](code/app/img/post_test.png) 
+![alt text](code/app/img/Ukol_post1.png)  
+![alt text](code/app/img/Ukol_post2.png)  
+
+> [!TIP]
+> Rozlište si cesty u jednotlivých endpointů. Pokud by byli stejné, tak by FastAPI nevědělo, na jaký endpoint se dotazujete
+> např @app.get("/get_name") AND @app.post("/post_name")  
+<details>
+<summary> Řešení </summary>
+
+``` 
+@app.post("/post_name")
+async def post_name(post_name: str):
+    return {"message": "Item added successfully"}
+``` 
+
+</details>
+  
 ## PUT endpoint  
 U endpointu PUT už potřebujeme parametry 2. Jeden identifikátor a druhý, čím to chceme nahradit
 ```
-@app.put("/pt_name/")
-async def update_item(name_id: int, name: str):
-    fake_names_db[name_id] = name
-    return {"message": f"Item {fake_names_db[name_id]} updated successfully"}
+@app.put("/put_name/")
+async def put_name(name_id: int, name: str):
+    return {"message": f"{old_name} updated successfully to {name}"}
 ```  
-Můžeme otestovat buď skrz web  
+ÚKOL
 
-nebo přes SwaggerUI  
-![alt text](code/app/img/put_test.png)
+Zkuste zaměnit jméno, které jste si přidali za jiné.    
+> [!TIP]
+> db se indexuje od 1
+<summary> Řešení </summary>
+
+``` 
+@app.post("/post_name")
+async def post_name(post_name: str):
+    result = session.add(Name(name=post_name))
+    return {"message": "Item added successfully"}
+``` 
+
+</details>
+
+Zase otestujte přes SwaggerUI  
 ## DELETE endpoint
 A poslední základné endpoint je nečekaně na mazání záznamu. Tady už potřebujeme akorát identifikátor
 ```
 @app.delete("/del_name/")
 async def update_item(name_id: int):
-    del fake_names_db[name_id]
+    session.query(Name).filter(Name.id == name_id).delete()
     return {"message": "Item deleted successfully"}
 ```  
-Zase můžeme otestovat buď skrz web  
+Můžeme to otestovat přes SwaggerUI  
+![alt text](code/app/img/delete_test.png)  
 
-nebo přes SwaggerUI  
-![alt text](code/app/img/delete_test.png)
 # Path a Query parametry
 Jak už jsme si mohli všimnout, FastAPI používá nějakou formu parametrů / proměnných. Přesněji se dělí na Path a Query.  
 ## Path
@@ -242,18 +282,6 @@ async def update_name(name_id: int, name: str):
 return {"Number": name_id, "Name": name}
 ```
 
-Stejným způsobem můžeme deklarovat nepovinné parametry
-
-```
-@app.put("/names/{name_id}")
-async def update_name(name_id: int, name: Union[str, None] = None):
-return {"Number": name_id, "Name": name}
-```
-> [!TIP]
-> Od Pythonu 3.10 můžeme i takto:
-> ```
-> name: str | None = None
-> ```
 
 Dále můžeme validovat data pomocí knihoven Query a Annotated, například:  
 maximální/minimální délka proměnné  
@@ -268,8 +296,8 @@ Dají se validovat hodnoty typu string,int,..
 ### Ukoly na Query
 1) Zkuste si definovat promennou typu bool. Napište si if podmínku na kontrolu True False + výpis.  
 Zkuste zadávat všemožné obměny hodnot typu pravda (true, True, on, yes..)
-<details>
-<summary> Vysvětlení </summary>
+    <details>
+    <summary> Vysvětlení </summary>
 
 ```
 @app.get("/names")
@@ -281,7 +309,7 @@ async def get_name(bl: bool = False):
 ```
 Zase nám pomáha knihovna Pydantic a všechno konvertuje na hodnotu True  
 
-</details>
+    </details>
 
 # Pydantic 
 Když potřebujeme poslat data do API tak je posíláme jako "request body". Api nám poté posílá "response body"  
@@ -299,13 +327,13 @@ class Name(BaseModel):
     age: float
 ```
 Tím, že jsme si vytvořili tento model jako třídu, tak už nemusíme všechno vypisovat jako query parametry.  
-Proměnné, které nejsou definované jako nepovinné (Union[str, None] **= None**), jsou vždy <code style="color":red>povinné</code>
+Proměnné, které nejsou definované jako nepovinné (Union[str, None] **= None**), jsou vždy <code style="color:red">povinné</code>
 ```
 @app.get("/names/")
 async def update_name(name: Name):
 return name
 ```
-Když si to teď vyzkoušíme v SwaggerUI, tak zjistíme, že nám to vrací JSON (respektivě dictionary)
+Když si to teď vyzkoušíme v SwaggerUI, tak zjistíme, že nám to vrací JSON (respektivě dictionary) podle class Name
 
 ### Ukoly na Pydantic
 
