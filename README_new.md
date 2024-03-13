@@ -100,6 +100,7 @@ Teď spustíme aplikaci. Podíváme do prohlížeče na URL adresu, kterou nám 
 ```
   
 To samé si můžeme vyzkoušet ve SwaggerUI (za "/" dopsat docs)  
+
 ![alt text](code\app\img\swagger_get.png)  
   
 
@@ -128,17 +129,20 @@ Zkuste si doplnit POST endpoint tak, aby fungovalo přidávání jména do db.
 Otestujte pomocí SwaggerUI  
 
 ![alt text](code/app/img/Ukol_post1.png)  
+
 ![alt text](code/app/img/Ukol_post2.png)  
 
 > [!TIP]
 > Rozlište si cesty u jednotlivých endpointů. Pokud by byli stejné, tak by FastAPI nevědělo, na jaký endpoint se dotazujete
 > např @app.get("/get_name") AND @app.post("/post_name")  
+
 <details>
 <summary> Řešení </summary>
 
 ``` 
 @app.post("/post_name")
 async def post_name(post_name: str):
+    result = session.add(Name(name=post_name))
     return {"message": "Item added successfully"}
 ``` 
 
@@ -155,7 +159,10 @@ async def put_name(name_id: int, name: str):
 
 Zkuste zaměnit jméno, které jste si přidali za jiné.    
 > [!TIP]
-> db se indexuje od 1
+> db se indexuje od 1  
+
+Zase otestujte přes SwaggerUI  
+
 <summary> Řešení </summary>
 
 ``` 
@@ -164,10 +171,8 @@ async def post_name(post_name: str):
     result = session.add(Name(name=post_name))
     return {"message": "Item added successfully"}
 ``` 
-
 </details>
 
-Zase otestujte přes SwaggerUI  
 ## DELETE endpoint
 A poslední základné endpoint je nečekaně na mazání záznamu. Tady už potřebujeme akorát identifikátor
 ```
@@ -202,7 +207,7 @@ Nebo takto
 ![alt text](code/app/img/get_ujep.png)
 
 Důvod je, že jsme neřekli FastAPI, jaký datový typ požadujeme. Tak se s tím FastAPI nijak netrápí a všechno konvertuje na typ string.  
-Typ proměnné určíme v parametrech funkce pomocí **proměnná: "typ"**
+Typ proměnné určíme v parametrech funkce pomocí **proměnná: typ**
 
 ```
 @app.get("/gt_name/{name_id}")
@@ -273,6 +278,14 @@ return {"Number": name_id, "Name": name}
 > Od Pythonu 3.10 můžeme nepovinné proměnné definovat:
 > name: str | None = None
 
+Když vypisujeme z databáze, která má strašně moc hodnot, tak můžeme využít paramtry **skip** a **limit**.  
+Rovnou můžeme nastavit defaultní hodnoty
+
+```
+@app.get("/get_names/")
+async def get_names(skip: int = 0, limit: int = 0):
+    return session.query(Name).limit(limit).offset(skip).all()
+```
 
 Samozřejmě můžeme kombinovat Path a Querry parametrs nebo jich napsat několik
 
@@ -284,20 +297,32 @@ return {"Number": name_id, "Name": name}
 
 
 Dále můžeme validovat data pomocí knihoven Query a Annotated, například:  
-maximální/minimální délka proměnné  
-přidávání metadat (popisků)  
-Jestli se hodnota rovná přesně danné patterně
-Aby to byl list, URL, soubor
 
-Dají se validovat hodnoty typu string,int,..  
+```
+@app.get("/Annotated/")
+async def get_name(query: Annotated[str | None, Query(min_length=3, max_length=50, pattern="^fixedquery$")])
+return {"query": query}
+```
+Pomocí Annotated můžeme deklarovat další informace a parametry promenný.  
+Query nám zase říká určitý parametr. V tomto případě:
+Min/Max_length udává minimální/maximální délku dat.  
+pattern - data se musí přesně rovnat textu mezi **"^"** a **"$"**
+
+Dále díky této knihovně můžeme požadovat klidně celý list hodnot:  
+```
+@app.get("/Annotated/")
+async def get_name(query: Annotated[list[str] | None, Query()] = None)
+return {"query": query}
+```
 
 Úplně stejně můžeme validovat i proměnné v Path, akorát nebudeme importovat ~~Query~~, ale **Path**
 
 ### Ukoly na Query
 1) Zkuste si definovat promennou typu bool. Napište si if podmínku na kontrolu True False + výpis.  
-Zkuste zadávat všemožné obměny hodnot typu pravda (true, True, on, yes..)
-    <details>
-    <summary> Vysvětlení </summary>
+Zkuste zadávat všemožné obměny hodnot typu pravda (true, True, on, yes..) 
+
+<details>
+<summary> Vysvětlení </summary>
 
 ```
 @app.get("/names")
@@ -309,7 +334,7 @@ async def get_name(bl: bool = False):
 ```
 Zase nám pomáha knihovna Pydantic a všechno konvertuje na hodnotu True  
 
-    </details>
+</details>
 
 # Pydantic 
 Když potřebujeme poslat data do API tak je posíláme jako "request body". Api nám poté posílá "response body"  
@@ -323,18 +348,70 @@ Teď si deklarujeme náš data model, která dedí z BaseModel
 ```
 class Name(BaseModel):
     first_name: str
-    last_name: Union[str, None] = None
-    age: float
+    last_name: str | None = None
+    age: int
 ```
 Tím, že jsme si vytvořili tento model jako třídu, tak už nemusíme všechno vypisovat jako query parametry.  
 Proměnné, které nejsou definované jako nepovinné (Union[str, None] **= None**), jsou vždy <code style="color:red">povinné</code>
 ```
 @app.get("/names/")
 async def update_name(name: Name):
-return name
+name_dict = name.dict()
+return {"First name:": name.first_name, "Last name": name.last_name}
 ```
-Když si to teď vyzkoušíme v SwaggerUI, tak zjistíme, že nám to vrací JSON (respektivě dictionary) podle class Name
+
 
 ### Ukoly na Pydantic
+
+Zde máte přepsaný tabulku a hodnoty odpovídajíc BaseModelu.
+class Name(Base):
+    __tablename__ = "names"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(25))
+    last_name = Column(String(25))
+    age = Column(Integer())
+
+fake_names = [
+    Name(name="Elon", last_name="Muskrat", age=53),
+    Name(name="Johnny", last_name="Depp", age=55),
+    Name(name="Taylor", last_name="Drift", age=23),
+    Name(name="Brad", last_name="Pitstop", age=33),
+    Name(name="Angelina Joliet", last_name="Joliet", age=48),
+    Name(name="Kim Carcrashian", last_name="Carcrashian", age=43),
+    Name(name="Leonardo DiCapuccino", last_name="DiCapuccino", age=49),
+    Name(name="Miley Virus", last_name="Virus", age=31),
+    Name(name="Beyoncé Knows-all", last_name="Knows-all", age=42),
+    Name(name="Dwayne 'The pebble' Johnson", last_name="Johnson", age=51),
+]  
+
+ÚKOL
+
+Přepiště si POST endpoint, aby přijímal parametry podle BaseModelu a doplňoval správně do databáze.
+
+<details>
+<summary> Řešení </summary>
+
+```
+@app.post("/post_name")
+async def post_name(f_name: str, l_name: str | None = None, ag: int):
+    result = session.add(Name(first_name=first_name, last_name = l_name, age = ag))
+    return {"message": "Item added successfully"}
+```
+
+</details>
+
+ÚKOL
+
+Upravte endpoint GET, aby přeskočil první 2 hodnoty a vypsal následujích 5
+<details>
+<summary> Řešení </summary>
+
+```
+@app.get("/get_names/")
+async def get_names(skip: int = 0, limit: int = 0):
+    return session.query(Name).limit(limit).offset(skip).all()
+```
+
+</details>
 
 # Ukázka použití
