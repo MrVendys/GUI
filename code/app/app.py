@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, create_engine, MetaData
 from sqlalchemy.orm import declarative_base, sessionmaker
@@ -17,16 +18,16 @@ Base.metadata.create_all(engine)  # Vytvoření tabulek
 Session = sessionmaker(bind=engine)
 
 fake_names = [
-    Names(name="Elon", last_name="Muskrat", age=53),
-    Names(name="Johnny", last_name="Depp", age=55),
+    Names(name="Elon", last_name="Tusk", age=53),
+    Names(name="Johnny", last_name="Depp-ression", age=55),
     Names(name="Taylor", last_name="Drift", age=23),
     Names(name="Brad", last_name="Pitstop", age=33),
-    Names(name="Angelina Joliet", last_name="Joliet", age=48),
-    Names(name="Kim Carcrashian", last_name="Carcrashian", age=43),
-    Names(name="Leonardo DiCapuccino", last_name="DiCapuccino", age=49),
-    Names(name="Miley Virus", last_name="Virus", age=31),
-    Names(name="Beyoncé Knows-all", last_name="Knows-all", age=42),
-    Names(name="Dwayne 'The pebble' Johnson", last_name="Johnson", age=51),
+    Names(name="Angelina", last_name="Joliet", age=48),
+    Names(name="Kim", last_name="Carcrashian", age=43),
+    Names(name="Leonardo", last_name="DiCapuccino", age=49),
+    Names(name="Miley", last_name="Virus", age=31),
+    Names(name="Beyoncé", last_name="Knows-all", age=42),
+    Names(name="Dwayne 'The pebble'", last_name="Johnson", age=51),
 ]
 session = Session()
 session.add_all(fake_names)
@@ -38,6 +39,21 @@ class Name(BaseModel):
     age: float
 
 app = FastAPI()
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/get_names/")
 async def get_names(skip: int = 2, limit: int = 5):
@@ -60,3 +76,7 @@ async def dalete_item(name_id: int):
     session.query(Names).filter(Name.id == name_id).delete()
     return {"message": "Item deleted successfully"}
 
+
+@app.get("/pm_get/{id}")
+async def get_names(id: int):
+    return id

@@ -34,12 +34,19 @@ Naše aplikace beží na localhostu na adrese, kterou nám to vypsalo do konzole
 
 Alternativně můžeme do URL za náší localhost adresu připsat /docs a objeví se nám swaggerUI.  
 
+Nebo, pokud by se nám SWAGGERUI nelíbil, můžeme použít Postman.
+
 ## Co je to SWAGGERUI  
 Dopřává nám možnost vizualizovat a interagovat s naší API bez toho, abychom si museli nejdřív naprogramovat nějakou logiku.  
 Automaticky to generuje prostředí podle našich OpenAPI specifikací  
 Víc informací [zde](https://github.com/swagger-api/swagger-ui/blob/master/README.md)  
  
 ![alt text](code/app/img/swagger.png)  
+
+## Co je to Postman
+Je aplikace, která nám umožňuje testovat API požadavky. Umožňuje nám mnohem víc, než SWAGGER Interface, ale pro naší malou aplikaci můžeme použít oboje  
+
+![alt text](code/app/img/Postman.png)  
 
 # Vytvoření databáze
 Tím, že API většinou komunikuje s nějakou databází, tak pro názornou ukázku budeme používat SQLite s SQLAlchemy.  
@@ -100,8 +107,6 @@ Teď spustíme aplikaci. Podíváme do prohlížeče na URL adresu, kterou nám 
 ```
   
 To samé si můžeme vyzkoušet ve SwaggerUI (za "/" dopsat docs)  
-
-![alt text](code\app\img\swagger_get.png)  
   
 
 Zkusíme si vypsat všechny data z databáze:  
@@ -130,7 +135,7 @@ Otestujte pomocí SwaggerUI
 
 ![alt text](code/app/img/Ukol_post1.png)  
 
-![alt text](code/app/img/Ukol_post2.png)  
+![alt text](code/app/img/ukol_post2.png)  
 
 > [!TIP]
 > Rozlište si cesty u jednotlivých endpointů. Pokud by byli stejné, tak by FastAPI nevědělo, na jaký endpoint se dotazujete
@@ -163,6 +168,7 @@ Zkuste zaměnit jméno, které jste si přidali za jiné.
 
 Zase otestujte přes SwaggerUI  
 
+<details>
 <summary> Řešení </summary>
 
 ``` 
@@ -372,17 +378,17 @@ class Name(Base):
     age = Column(Integer())
 
 fake_names = [
-    Name(name="Elon", last_name="Muskrat", age=53),
-    Name(name="Johnny", last_name="Depp", age=55),
-    Name(name="Taylor", last_name="Drift", age=23),
-    Name(name="Brad", last_name="Pitstop", age=33),
-    Name(name="Angelina Joliet", last_name="Joliet", age=48),
-    Name(name="Kim Carcrashian", last_name="Carcrashian", age=43),
-    Name(name="Leonardo DiCapuccino", last_name="DiCapuccino", age=49),
-    Name(name="Miley Virus", last_name="Virus", age=31),
-    Name(name="Beyoncé Knows-all", last_name="Knows-all", age=42),
-    Name(name="Dwayne 'The pebble' Johnson", last_name="Johnson", age=51),
-]  
+    Names(name="Elon", last_name="Tusk", age=53),
+    Names(name="Johnny", last_name="Depp-ression", age=55),
+    Names(name="Taylor", last_name="Drift", age=23),
+    Names(name="Brad", last_name="Pitstop", age=33),
+    Names(name="Angelina", last_name="Joliet", age=48),
+    Names(name="Kim", last_name="Carcrashian", age=43),
+    Names(name="Leonardo", last_name="DiCapuccino", age=49),
+    Names(name="Miley", last_name="Virus", age=31),
+    Names(name="Beyoncé", last_name="Knows-all", age=42),
+    Names(name="Dwayne 'The pebble'", last_name="Johnson", age=51),
+] 
 
 ÚKOL
 
