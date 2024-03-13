@@ -71,16 +71,16 @@ def get_hello(name):
 ```
 
 ## Výhody FastAPI
- :white_check_mark: Rychlejší (přispívá k tomu možnost asynchroního běhu)
- :white_check_mark: Nápovědy k typům a ověřování dat (Pydantic)
- :white_check_mark: Automatická dokumentace (Swagger UI)
- :white_check_mark: Vestavěné vyhytávky (Flask si je muže přidat)
- :white_check_mark: Založeno na OpenAPI
+ :white_check_mark: Rychlejší (přispívá k tomu možnost asynchroního běhu)  
+ :white_check_mark: Nápovědy k typům a ověřování dat (Pydantic)  
+ :white_check_mark: Automatická dokumentace (Swagger UI)  
+ :white_check_mark: Vestavěné vyhytávky (Flask si je muže přidat)  
+ :white_check_mark: Založeno na OpenAPI  
 
 ## Nevýhody FastAPI
- :negative_squared_cross_mark: Těžší na naučení
- :negative_squared_cross_mark: Méně rozšíření třetích stran
-Translated with DeepL.com (free version)
+ :negative_squared_cross_mark: Těžší na naučení  
+ :negative_squared_cross_mark: Méně rozšíření třetích stran  
+Translated with DeepL.com (free version)  
 
 # Využití na trhu
 Speciálně pro pana Béra tady máme ještě sekci, "Má to využití v praxi?"
