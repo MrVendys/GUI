@@ -1,4 +1,4 @@
-### FastAPI  
+d d### FastAPI  
 Abychom se dále mohlo bavit o FastAPI, tak nejdřív se musíme ujisti, že každý chápe pojem API.
 ## Co je to API
 - API (Application Programming Interface) je soubor pravidel, protokolů a nástrojů, které umožňují různým softwarovým aplikacím vzájemně komunikovat.
@@ -27,7 +27,7 @@ https://example.com/items/foo
 /items/foo
 ```  
 
->[!HINT] 
+> [!NOTE] 
 > Dále to budu nazývat endpointy...
 
 FastAPI používá "operace", což zde odkazuje na HTTP metody:
