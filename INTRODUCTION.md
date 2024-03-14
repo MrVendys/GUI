@@ -87,9 +87,8 @@ def get_hello(name):
  :negative_squared_cross_mark: Méně rozšíření třetích stran  
 Translated with DeepL.com (free version)  
 
-# Využití na trhu
-Speciálně pro pana Béra tady máme ještě sekci, "Má to využití v praxi?"
-Krátká odpoveď: "ANO"  
+# Využití na trhu  
+
 S API se v dnešní době určitě dost pracuje a tento framework mi osobně přijde jako dobrá varianta při tvorbě API.  
 Zde jsou 2 příklady poptávky práce:  
 ![alt text](code/app/img/FastApi_jobs1.png)  
