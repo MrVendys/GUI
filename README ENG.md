@@ -43,7 +43,7 @@ More information [here](https://github.com/swagger-api/swagger-ui/blob/master/RE
 
 # Creating a database
 Since the API usually communicates with a database of some sort, we'll use SQLite with SQLAlchemy to demonstrate.  
-By constantly refreshing our application, we would also be deleting cookie data, which would be a delay.  
+By constantly refreshing our application, we would also be deleting data, which would be a delay.  
 Here is the code to create the database:  
 
 ```  
@@ -101,6 +101,7 @@ Now we run the application. We'll look in the browser at the URL it wrote in the
   
 We can try the same thing in SwaggerUI (after the "/" type docs)  
 
+
 ![alt text](code\app\img\swagger_get.png)  
   
 
@@ -129,8 +130,8 @@ Try to add a POST endpoint so that adding a name to the db works.
 Test with SwaggerUI  
 
 ![alt text](code/app/img/Ukol_post1.png)  
-
-![alt text](code/app/img/Ukol_post2.png)  
+  
+![alt text](code/app/img/ukol_post2.png)  
 
 > [!TIP]
 > Distinguish the paths at each endpoint. If they were the same, FastAPI would not know which endpoint you are querying
@@ -157,7 +158,8 @@ async def put_name(name_id: int, name: str):
 ```  
 TASK
 
-Try substituting the name you added for another.    
+Try substituting the name you added for another.  
+
 > [!TIP]
 > db is indexed from 1  
 
