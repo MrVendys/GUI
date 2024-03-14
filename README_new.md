@@ -404,18 +404,4 @@ async def post_name(f_name: str, l_name: str | None = None, ag: int):
 
 </details>
 
-ÚKOL
-
-Upravte endpoint GET podle následujícího screenu:  
-
-<details>
-<summary> Řešení </summary>
-
-```
-@app.get("/get_names/")
-async def get_names(skip: int = 0, limit: int = 0):
-    return session.query(Name).limit(limit).offset(skip).all()
-```
-
-</details>
 
