@@ -17,7 +17,9 @@ Abychom se dále mohlo bavit o FastAPI, tak nejdřív se musíme ujisti, že ka�
 ### Jak to funguje
  - FastAPI a obecně API pracujou s "operacemi cest" (Path). Myslí se tím část URL za první **/**
 ```
-https://example.com/items/foo
+
+https://example.com/items/foo  
+
 ```
 "Path" je :
 ```
