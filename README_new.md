@@ -51,7 +51,7 @@ Nebo, pokud by se nám swaggerUI nelíbil, můžeme použít Postman.
 
 # Vytvoření databáze
 - Tím, že API většinou komunikuje s nějakou databází, tak pro názornou ukázku budeme používat SQLite s SQLAlchemy.  
-- Zároveň budeme neustále refreshovat naší aplikaci, tak by se nám i mazala cookie data, což by zdržovalo.  
+- Zároveň budeme neustále refreshovat naší aplikaci, tak by se nám i mazala data, což by zdržovalo.  
 - Zde je kód pro vytvoření databáze:  
 
 ```  
