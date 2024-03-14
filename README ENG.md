@@ -366,7 +366,7 @@ return {"First name:": name.first_name, "Last name": name.last_name}
 ### Tasks on Pydantic
 
 Here you have the rewritten table and the values corresponding to the BaseModel.
-class Name(Base):
+class Names(Base):
     __tablename__ = "names"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(25))
@@ -374,16 +374,16 @@ class Name(Base):
     age = Column(Integer())
 
 fake_names = [
-    Name(name="Elon", last_name="Muskrat", age=53),
-    Name(name="Johnny", last_name="Depp", age=55),
-    Name(name="Taylor", last_name="Drift", age=23),
-    Name(name="Brad", last_name="Pitstop", age=33),
-    Name(name="Angelina Joliet", last_name="Joliet", age=48),
-    Name(name="Kim Carcrashian", last_name="Carcrashian", age=43),
-    Name(name="Leonardo DiCapuccino", last_name="DiCapuccino", age=49),
-    Name(name="Miley Virus", last_name="Virus", age=31),
-    Name(name="Beyoncé Knows-all", last_name="Knows-all", age=42),
-    Name(name="Dwayne 'The pebble' Johnson", last_name="Johnson", age=51),
+    Names(name="Elon", last_name="Muskrat", age=53),
+    Names(name="Johnny", last_name="Depp", age=55),
+    Names(name="Taylor", last_name="Drift", age=23),
+    Names(name="Brad", last_name="Pitstop", age=33),
+    Names(name="Angelina Joliet", last_name="Joliet", age=48),
+    Names(name="Kim Carcrashian", last_name="Carcrashian", age=43),
+    Names(name="Leonardo DiCapuccino", last_name="DiCapuccino", age=49),
+    Names(name="Miley Virus", last_name="Virus", age=31),
+    Names(name="Beyoncé Knows-all", last_name="Knows-all", age=42),
+    Names(name="Dwayne 'The pebble' Johnson", last_name="Johnson", age=51),
 ]  
 
 TASK
@@ -396,7 +396,7 @@ Rewrite your POST endpoint to accept parameters according to BaseModel and popul
 ```
 @app.post("/post_name")
 async def post_name(f_name: str, l_name: str | None = None, ag: int):
-    result = session.add(Name(first_name=first_name, last_name = l_name, age = ag))
+    result = session.add(Names(first_name=first_name, last_name = l_name, age = ag))
     return {"message": "Item added successfully"}
 ```
 
@@ -411,11 +411,9 @@ Modify the GET endpoint to skip the first 2 values and output the next 5
 ```
 @app.get("/get_names/")
 async def get_names(skip: int = 0, limit: int = 0):
-    return session.query(name).limit(limit).offset(skip).all()
+    return session.query(Names).limit(limit).offset(skip).all()
 ```
 
 </details>
-
-# Sample usage
 
 Translated with Deepl.com
