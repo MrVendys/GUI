@@ -20,6 +20,7 @@ Abychom se dále mohlo bavit o FastAPI, tak nejdřív se musíme ujisti, že ka�
 
 https://example.com/items/foo  
 
+
 ```
 "Path" je :
 ```
